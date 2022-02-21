@@ -30,6 +30,7 @@ const start = async () => {
       // storage dir, i.e. Google Drive, make this true if you'd like to ignore these files and not throw an error
       forgiveParseErrors: false,
     });
+    
   } catch (error) {
     console.log("could not create storage!");
   }
