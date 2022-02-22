@@ -3,7 +3,7 @@ const express = require('express');
 const {createTable,allTables,addUserToTable} = require('../controllers/createTable')
 const Router = express.Router();
 
-Router.route('/createTable').post(createTable);
+Router.route('/createTable').post(createTable,addUserToTable);
 Router.route('/newUser').post(addUserToTable)
 Router.route('/allTables').get(allTables);
 

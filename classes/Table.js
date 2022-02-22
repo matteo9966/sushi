@@ -1,4 +1,5 @@
 const storage = require("node-persist");
+const makeid = require('../utils/randomKey');
 class Table {
     constructor(coperti,portate){
         this.coperti = coperti //numero
@@ -50,8 +51,10 @@ class Table {
     static async  aggiungiUtenteAlTavolo(idTavolo,utente){
        const table = await Table.tableExists(idTavolo);
        if(!table.exists){
-           //restituisco qualcosa per dire che non è stato possibile aggiungere utente al tavolo
+         throw new Error("Id tavolo non corretto");
        }
+
+       
        const tavolo = table.table;
        console.log(tavolo,utente)
        tavolo.utenti.push(utente);
@@ -71,6 +74,7 @@ class Utente {
     constructor(nome,ordinazione=[]){
         this.nome= nome;
         this.ordinazione=ordinazione
+        this.id = makeid(6);
     }
 }
 
