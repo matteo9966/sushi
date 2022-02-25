@@ -1,6 +1,7 @@
 const {StatusCodes} = require('http-status-codes');
-const {Table,Utente} = require('../classes/Table');
+const {Table,Utente,Piatto} = require('../classes/Table');
 const {TableResponse} = require('../classes/Responses/Table')
+const OrdinazioneResponse = require('../classes/Responses/Ordinazione');
 const ResponseObj = require('../classes/Responses/ResponseObject');
 const {ErrorCode} = require('../errorcodes/index')
 const storage = require("node-persist");
@@ -10,7 +11,7 @@ const uniqueTableID = require( '../utils/uniqueTableId');
 const createTable = async (req,res,next)=>{
     const response = new ResponseObj();
     
-    const tableId= await uniqueTableID(5); // TODO: la funzione deve essere univoca
+    const tableId= await uniqueTableID(5); // 
    const {portate,coperti,nome} = req.body;
    if(!portate || !coperti || !nome){
        response.errorCode=ErrorCode.BadRequest.code;
@@ -84,4 +85,27 @@ const addUserToTable = async (req,res)=>{
     
 }
 
-module.exports = {createTable,allTables,addUserToTable};
+const addOrdinazioneUtente = async (req,res)=>{
+    const response = new ResponseObj();
+    const {idUtente,idTavolo,piatti} = req.body;
+    if(!idTavolo || !idTavolo || !piatti || piatti && piatti.length <1){
+        response.errorCode=ErrorCode.BadRequest.code;
+       response.errorDescription=ErrorCode.BadRequest.description;
+ 
+       res.status(StatusCodes.BAD_REQUEST).json(response);
+       return;
+    } 
+    //1 verifico l'esistenza del tavolo, se il tavolo c'è, se l'utente c'è  aggiungo l'ordinazione.
+    try {
+       const updatedTable = await Table.aggiungiOrdinazioneUtente(idTavolo,idUtente,piatti)
+       response.payload=updatedTable;
+       return res.status(StatusCodes.OK).json(response);
+    }catch(error){
+        response.errorCode=ErrorCode.BadRequest.code;
+        response.errorDescription=ErrorCode.BadRequest.description+" "+error;
+        return res.status(StatusCodes.BAD_REQUEST).json(response);  
+    }
+    //quello che mi aspetto è un id del utente dal body
+}
+
+module.exports = {createTable,allTables,addUserToTable,addOrdinazioneUtente};
