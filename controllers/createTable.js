@@ -7,6 +7,7 @@ const {ErrorCode} = require('../errorcodes/index')
 const storage = require("node-persist");
 const makeid = require('../utils/randomKey');
 const uniqueTableID = require( '../utils/uniqueTableId');
+const e = require('express');
 
 const createTable = async (req,res,next)=>{
     const response = new ResponseObj();
@@ -26,11 +27,6 @@ const createTable = async (req,res,next)=>{
        const {coperti,portate} = req.body
        const table = new Table(coperti,portate);
        await storage.setItem(tableId,table);
-    //    /** @type {Table}*/
-    //    const tavolo = await storage.getItem(tableId);
-    //    const infoTavolo = new TableResponse(tavolo.coperti,tavolo.portate,tavolo.utenti,tableId)
-    //    response.payload=infoTavolo;
-    //    res.status(StatusCodes.CREATED).json(infoTavolo);
           
     } catch (error) {
        response.errorCode= ErrorCode.ServerError.code
@@ -72,8 +68,12 @@ const addUserToTable = async (req,res)=>{
         await Table.aggiungiUtenteAlTavolo(idTavolo,{...utente})
         
     } catch (error) {
+        if(error instanceof TypeError){
+            console.log(error);
+            error.message  = ""
+        }
         response.errorCode=ErrorCode.BadRequest.code;
-        response.errorDescription=ErrorCode.BadRequest.description+" "+error;
+        response.errorDescription=ErrorCode.BadRequest.description+" "+error.message;
         return res.status(StatusCodes.BAD_REQUEST).json(response)
     }
      /** @type {Table}*/
@@ -101,6 +101,10 @@ const addOrdinazioneUtente = async (req,res)=>{
        response.payload=updatedTable;
        return res.status(StatusCodes.OK).json(response);
     }catch(error){
+        if(error instanceof TypeError){
+            console.log("typeError")
+            error.message  = ""
+        }
         response.errorCode=ErrorCode.BadRequest.code;
         response.errorDescription=ErrorCode.BadRequest.description+" "+error;
         return res.status(StatusCodes.BAD_REQUEST).json(response);  

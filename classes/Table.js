@@ -10,7 +10,12 @@ class Table {
   }
 
   static async getTavolo(idTavolo) {
-    return await storage.getItem(idTavolo);
+    try{
+      return await storage.getItem(idTavolo);
+
+    }catch(err){
+      throw new Error("ID tavolo non corretto")
+    }
   }
 
   static async getLoggatiTavolo(idTavolo) {
@@ -27,7 +32,11 @@ class Table {
    * @returns {Promise<{exists:boolean,table:Table}>}
    */
   static async tableExists(idTavolo) {
+    
     const tavolo = await Table.getTavolo(idTavolo);
+    if(!tavolo){
+      return  { exists: false, table: {} }
+    }
     if (Object.keys(tavolo).length < 1) {
       return { exists: false, table: {} };
     }
@@ -47,6 +56,7 @@ class Table {
    * @param {string} idTavolo
    */
   static async aggiungiUtenteAlTavolo(idTavolo, utente) {
+  
     const table = await Table.tableExists(idTavolo);
     if (!table.exists) {
       throw new Error("Id tavolo non corretto");
@@ -102,10 +112,7 @@ class Table {
  * 
 */
   static utenteFaParteDelTavolo(idUtente,table){
-      const utenti = Table.utentiTavolo(table);
-      console.log("gli ID sono:");
-      console.log(utenti);
-      
+      const utenti = Table.utentiTavolo(table);    
       for(let i = 0 ; i< utenti.length; i++){
           console.log(utenti.length);
           console.log(utenti[i].id.normalize(),idUtente.normalize())
@@ -135,12 +142,6 @@ class Piatto {
     this.qnt = qnt;
   }
 }
-// class TableData {
-//     constructor(){
-//         this.loggati=0;
-//         this.totale
-//     }
 
-// }
 
 module.exports = { Table, Utente, Piatto };
