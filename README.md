@@ -9,10 +9,10 @@
 
 | **METHOD** 	| **ENDPOINT**  	| **DESCRIZIONE**                       	|
 |------------	|---------------	|---------------------------------------	|
-| POST       	| /createTable  	| (crea un nuovo tavolo)[#Crea nuovo tavolo]    |
-| POST       	| /newUser      	| (aggiungi un nuovo utente al tavolo)[#Aggiungi nuovo utente]   	|
-| POST       	| /newOrder     	| (utente crea un nuovo ordine)[#Crea ordine]           	|
-| GET        	| /complete/:id 	| (visualizza ordine completo del tavolo)[#Visualizza ordine completo] 	|
+| POST       	| /createTable  	| [crea un nuovo tavolo](#Crea nuovo tavolo)    |
+| POST       	| /newUser      	| [aggiungi un nuovo utente al tavolo](#Aggiungi nuovo utente)   	|
+| POST       	| /newOrder     	| [utente crea un nuovo ordine](#Crea ordine)           	|
+| GET        	| /complete/:id 	| [visualizza ordine completo del tavolo](#Visualizza ordine completo) 	|
 
 - Nel caso la richiesta non vada a buon fine, ricevi un response con un errorCode non nullo, se l'errorCode non è nullo vuol dire che c'è anche un messaggio. in ogni caso se ricevi uno status > 400 dal server vuol dire che c'è stato un errore
 
@@ -137,6 +137,8 @@
 ```
 ### Visualizza ordine completo
 
+l'endpoint in questo esempio è: 
+- /complete/UCTBU
 - #### Request Body
 - 
 ```json
