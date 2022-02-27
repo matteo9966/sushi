@@ -9,23 +9,23 @@ const { Table, Piatto } = require("../classes/Table");
  *  @returns {[Piatto]} array di piatti          
  */
 function sortPiattiOrdinati(table){
-    const result  = {}; 
-    const ArrayOfPiatti = []
+    const result  = {}; //result è un oggetto in cui gli id sono la chiave e il valore è la somma delle quantità di ordinazioni per ogni cliente
+    const ArrayOfPiatti = [] //arrayOfPiatti è il risultato finale che mi aspetto
     const mappedOrders = [];
     
     table.utenti.forEach(utente=>{
-        const mappedOrder = mapArrayToObject(utente.ordinazione);
+        const mappedOrder = mapArrayToObject(utente.ordinazione); //trasforma l'ordine da un array in un ogetto in cui ogni chiave è l'id del piatto e ogni valore è la sua quantità
         mappedOrders.push(mappedOrder);
     })
-    
-    const allIdsWithDuplicates =  mappedOrders.reduce((res,el)=>{
-        return [...res,...Object.keys(el)]
+  
+    const allIdsWithDuplicates =  mappedOrders.reduce((res,el)=>{ // tutte le chiavi anche duplicate in un array
+        return [...res,...Object.keys(el)] 
     },[])
     
-    const idOfAllOrders = [...new Set(allIdsWithDuplicates)];
+    const idOfAllOrders = [...new Set(allIdsWithDuplicates)]; // rimuovo i duplicati
     
-    idOfAllOrders.forEach(id=>{
-        mappedOrders.forEach(order=>{
+    idOfAllOrders.forEach(id=>{       //sommo tutti gli ordini per ciascun cliente 
+        mappedOrders.forEach(order=>{ 
             if(!result.hasOwnProperty(id)){
                 result[id]=0;
             }
@@ -35,8 +35,8 @@ function sortPiattiOrdinati(table){
         })
     })
      
-    for(const [idPiatto,quantita] of Object.entries(result)){
-       const piatto = new Piatto(idPiatto,quantita);
+    for(const [idPiatto,quantita] of Object.entries(result)){  // riconverto in un array l'oggetto che riassume tutto
+       const piatto = {id:idPiatto,qnt:quantita};
        ArrayOfPiatti.push(piatto)
     }
     

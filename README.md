@@ -1,18 +1,167 @@
 # Backend del progetto SUSHI
 
-Idea del progetto: 
-senza utilizzare un backend, per avere dei dati temporanei che permettono di creare una lista di ordini, gli ordini vengono creati in un file temporaneo dalla durata di un certo tempo 
-Per questo utilizzo il package:
-- node-persist: JSON documents are stored in the file system for persistence. - stessa logica del session storage di un browser
-- ogni tavolo avra un ttl di 4 ore
+---
+- npm install
+- npm run start  -per avviare il server
+---
 
-idea: 
-cliente: chiedi tavolo(portate,numero persone,)
-server: crea un entry con ({#portate,nomi persone},{,persone che si sono loggate}) esempio
-                         "otp":{chiavetavolo:({portate:150,{matteo:"",gianni:"",alex:""},{loggati:1/5}})}
-        restituisci("otp") + cookie con dentro la chiave del tavolo
-cliente: mostra l'otp alle persone al tavolo, ognuno fa la sua richiesta con l' "otp"
-server:  conta quante persone si sono loggate, se si sono loggate tutte e 5 non accetta piu login.
+## API CALLS 
 
+| **METHOD** 	| **ENDPOINT**  	| **DESCRIZIONE**                       	|
+|------------	|---------------	|---------------------------------------	|
+| POST       	| /createTable  	| (crea un nuovo tavolo)[#Crea nuovo tavolo]    |
+| POST       	| /newUser      	| (aggiungi un nuovo utente al tavolo)[#Aggiungi nuovo utente]   	|
+| POST       	| /newOrder     	| (utente crea un nuovo ordine)[#Crea ordine]           	|
+| GET        	| /complete/:id 	| (visualizza ordine completo del tavolo)[#Visualizza ordine completo] 	|
 
+- Nel caso la richiesta non vada a buon fine, ricevi un response con un errorCode non nullo, se l'errorCode non è nullo vuol dire che c'è anche un messaggio. in ogni caso se ricevi uno status > 400 dal server vuol dire che c'è stato un errore
+
+## Esempio di richiesta e risposta:
+
+### Crea nuovo tavolo
+
+- #### Request Body
+- 
+```json
+{"portate":500,"coperti":4,"nome":"MATTEO"}
+```
+- #### Response Body
+
+```json
+{
+    "errorCode": null,
+    "errorDescription": null,
+    "payload": {
+        "infoTavolo": {
+            "coperti": 4,
+            "portate": 500,
+            "utenti": [
+                {
+                    "nome": "MATTEO",
+                    "ordinazione": [],
+                    "id": "E8XH6H"
+                }
+            ],
+            "codiceTavolo": "UCTBU"
+        },
+        "utente": {
+            "nome": "MATTEO",
+            "ordinazione": [],
+            "id": "E8XH6H"
+        }
+    }
+}
+```
+### Aggiungi nuovo utente
+
+- #### Request Body
+- 
+```json
+{"idTavolo":"UCTBU","nome":"GIANLUCA"}
+```
+- #### Response Body
+
+```json
+{
+    "errorCode": null,
+    "errorDescription": null,
+    "payload": {
+        "infoTavolo": {
+            "coperti": 4,
+            "portate": 500,
+            "utenti": [
+                {
+                    "nome": "MATTEO",
+                    "ordinazione": [],
+                    "id": "E8XH6H"
+                },
+                {
+                    "nome": "GIANLUCA",
+                    "ordinazione": [],
+                    "id": "RHNTHI"
+                }
+            ],
+            "codiceTavolo": "UCTBU"
+        },
+        "utente": {
+            "nome": "GIANLUCA",
+            "ordinazione": [],
+            "id": "RHNTHI"
+        }
+    }
+}
+```
+### Crea ordine
+
+- #### Request Body
+- 
+```json
+{"idUtente":"RHNTHI","idTavolo":"UCTBU","piatti":[{"id":11,"qnt":3},{"id":111,"qnt":11},{"id":122,"qnt":33}]}
+```
+- #### Response Body
+
+```json
+{
+    "errorCode": null,
+    "errorDescription": null,
+    "payload": {
+        "coperti": 4,
+        "portate": 500,
+        "utenti": [
+            {
+                "nome": "MATTEO",
+                "ordinazione": [],
+                "id": "E8XH6H"
+            },
+            {
+                "nome": "GIANLUCA",
+                "ordinazione": [
+                    {
+                        "id": 11,
+                        "qnt": 3
+                    },
+                    {
+                        "id": 111,
+                        "qnt": 11
+                    },
+                    {
+                        "id": 122,
+                        "qnt": 33
+                    }
+                ],
+                "id": "RHNTHI"
+            }
+        ]
+    }
+}
+```
+### Visualizza ordine completo
+
+- #### Request Body
+- 
+```json
+//nessun body per questa richiesta get
+```
+- #### Response Body
+
+```json
+{
+    "errorCode": null,
+    "errorDescription": null,
+    "payload": [
+        {
+            "id": "11",
+            "qnt": 3
+        },
+        {
+            "id": "111",
+            "qnt": 11
+        },
+        {
+            "id": "122",
+            "qnt": 33
+        }
+    ]
+}
+```
 

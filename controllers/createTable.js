@@ -5,7 +5,8 @@ const OrdinazioneResponse = require('../classes/Responses/Ordinazione');
 const ResponseObj = require('../classes/Responses/ResponseObject');
 const {ErrorCode} = require('../errorcodes/index')
 const storage = require("node-persist");
-const makeid = require('../utils/randomKey');
+// const makeid = require('../utils/randomKey');
+
 const uniqueTableID = require( '../utils/uniqueTableId');
 const e = require('express');
 
@@ -66,6 +67,13 @@ const addUserToTable = async (req,res)=>{
     //controllo se tavolo esiste //controllo se i dati sono tutti presenti
     try {
         await Table.aggiungiUtenteAlTavolo(idTavolo,{...utente})
+        /** @type {Table}*/
+       
+        const tavoloConNuovoUtente = await storage.getItem(idTavolo);
+         const infoTavolo = new TableResponse(tavoloConNuovoUtente.coperti,tavoloConNuovoUtente.portate,tavoloConNuovoUtente.utenti,idTavolo)
+         
+         response.payload={infoTavolo,utente};
+         res.status(StatusCodes.OK).json(response);
         
     } catch (error) {
         if(error instanceof TypeError){
@@ -76,12 +84,6 @@ const addUserToTable = async (req,res)=>{
         response.errorDescription=ErrorCode.BadRequest.description+" "+error.message;
         return res.status(StatusCodes.BAD_REQUEST).json(response)
     }
-     /** @type {Table}*/
-    
-     const tavoloConNuovoUtente = await storage.getItem(idTavolo);
-      const infoTavolo = new TableResponse(tavoloConNuovoUtente.coperti,tavoloConNuovoUtente.portate,tavoloConNuovoUtente.utenti,idTavolo)
-      response.payload=infoTavolo;
-      res.status(StatusCodes.OK).json(response);
     
 }
 
@@ -112,4 +114,31 @@ const addOrdinazioneUtente = async (req,res)=>{
     //quello che mi aspetto è un id del utente dal body
 }
 
-module.exports = {createTable,allTables,addUserToTable,addOrdinazioneUtente};
+const getCompleteOrder= async (req,res)=>{
+    const response = new ResponseObj();
+    const idTavolo = req.params?.id;
+    console.log('id del tavolo:',idTavolo);
+    if(idTavolo==undefined || idTavolo == null){
+        response.errorCode=ErrorCode.BadRequest.code;
+       response.errorDescription=ErrorCode.BadRequest.description +"ID Tavolo non inserito";
+      return  res.status(StatusCodes.BAD_REQUEST).json(response);
+    }
+    try {
+       const ordinazioneCompleta= await Table.getOrdinazioneCompletaDelTavolo(idTavolo)
+       console.log("ordinazione completa:",ordinazioneCompleta);
+       response.payload=ordinazioneCompleta;
+       return res.status(StatusCodes.OK).json(response);
+    } catch (error) {
+        if(error instanceof TypeError){
+            console.log("typeError")
+            error.message  = ""
+        }
+        response.errorCode=ErrorCode.BadRequest.code;
+        response.errorDescription=ErrorCode.BadRequest.description+" "+error;
+        return res.status(StatusCodes.BAD_REQUEST).json(response);  
+        
+    }
+
+}
+
+module.exports = {createTable,allTables,addUserToTable,addOrdinazioneUtente,getCompleteOrder};

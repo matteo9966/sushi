@@ -1,5 +1,6 @@
 const storage = require("node-persist");
 const makeid = require("../utils/randomKey");
+const sortPiattiOrdinati = require('../utils/sortPiattiOrdinati');
 class Table {
   constructor(coperti, portate) {
     this.coperti = coperti; //numero
@@ -63,7 +64,6 @@ class Table {
     }
 
     const tavolo = table.table;
-    console.log(tavolo, utente);
     tavolo.utenti.push(utente);
     console.log(tavolo);
     await storage.updateItem(idTavolo, tavolo); // in questo modo dovrei aggiornare il tavolo
@@ -88,7 +88,13 @@ class Table {
       }
       //arrivati qui, tavolo esiste, utente esiste, ora aggiungo i piatti al utente
       const index= table.table.utenti.findIndex(utente=>utente.id===idUtente);
-      table.table.utenti[index].ordinazione=piatti;
+      const mappedPiatti = piatti.filter(piatto=>{ //se manca informazione id o piatto restituisci falso
+        if(!piatto.id || !piatto.qnt){
+          return false
+        }
+        return true
+      })
+      table.table.utenti[index].ordinazione=mappedPiatti;
       await storage.updateItem(idTavolo, table.table);
       return table.table
     } catch (err) {
@@ -124,6 +130,23 @@ class Table {
         return false
        
         
+  }
+
+  static async getOrdinazioneCompletaDelTavolo(idTavolo){
+    try {
+      const table = await Table.tableExists(idTavolo);
+     
+      if (!table.exists) {
+        throw new Error("ID tavolo non presente");
+      }
+      const ordinazioneCompleta = sortPiattiOrdinati(table.table);
+      console.log(ordinazioneCompleta);
+
+      return ordinazioneCompleta
+      
+    } catch (err) {
+        throw err
+    }
   }
 
 }
