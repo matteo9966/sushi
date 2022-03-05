@@ -13,6 +13,7 @@
 | POST       	| /newUser      	| [aggiungi un nuovo utente al tavolo](#aggiungi-nuovo-utente)   	|
 | POST       	| /newOrder     	| [utente crea un nuovo ordine](#crea-ordine)           	|
 | GET        	| /complete/:id 	| [visualizza ordine completo del tavolo](#visualizza-ordine-completo) 	|
+|DELETE         | /clearOrders/:id  | [svuota tutte le ordinazioni del tavolo](#svuota-tutti-gli-ordini) |
 
 - Nel caso la richiesta non vada a buon fine, ricevi un response con un errorCode non nullo, se l'errorCode non è nullo vuol dire che c'è anche un messaggio. in ogni caso se ricevi uno status > 400 dal server vuol dire che c'è stato un errore
 
@@ -166,4 +167,42 @@ l'endpoint in questo esempio è:
     ]
 }
 ```
+
+### Svuota tutti gli ordini
+
+l'endpoint in questo esempio è:
+- /clearOrders/UCTBU
+
+
+- #### Request Body
+- 
+```json
+nessun body per questa richiesta
+```
+- #### Response Body
+
+```json
+{
+    "errorCode": null,
+    "errorDescription": null,
+    "payload": {
+        "coperti": 4,
+        "portate": 500,
+        "utenti": [
+            {
+                "nome": "MATTEO",
+                "ordinazione": [],
+                "id": "E8XH6H"
+            },
+            {
+                "nome": "GIANLUCA",
+                "ordinazione": [],
+                "id": "RHNTHI"
+            }
+        ]
+    }
+}
+```
+
+
 
