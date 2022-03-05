@@ -5,8 +5,6 @@ const OrdinazioneResponse = require('../classes/Responses/Ordinazione');
 const ResponseObj = require('../classes/Responses/ResponseObject');
 const {ErrorCode} = require('../errorcodes/index')
 const storage = require("node-persist");
-// const makeid = require('../utils/randomKey');
-
 const uniqueTableID = require( '../utils/uniqueTableId');
 const e = require('express');
 
@@ -141,4 +139,32 @@ const getCompleteOrder= async (req,res)=>{
 
 }
 
-module.exports = {createTable,allTables,addUserToTable,addOrdinazioneUtente,getCompleteOrder};
+const clearOrdinazioniDiTuttiGliUtentiAlTavolo = async (req,res) =>{
+    const {id:idTavolo} = req.params;
+
+    if(!idTavolo){
+        response.errorCode=ErrorCode.BadRequest.code;
+        response.errorDescription=ErrorCode.BadRequest.description +"ID Tavolo non inserito";
+        return  res.status(StatusCodes.BAD_REQUEST).json(response);
+    }
+
+    try {
+       const response = new ResponseObj();
+       const tavoloAggiornato = await Table.clearOrdinazioniDiTuttiGliUtentiAlTavolo(idTavolo);
+       response.payload=tavoloAggiornato;
+       return res.status(StatusCodes.OK).json(response);
+       
+    } catch (error) {
+        if(error instanceof TypeError){
+            console.log("typeError")
+            error.message  = ""
+        }
+        response.errorCode=ErrorCode.BadRequest.code;
+        response.errorDescription=ErrorCode.BadRequest.description+" "+error;
+        return res.status(StatusCodes.BAD_REQUEST).json(response);  
+    }
+
+
+}
+
+module.exports = {createTable,allTables,addUserToTable,addOrdinazioneUtente,getCompleteOrder,clearOrdinazioniDiTuttiGliUtentiAlTavolo};

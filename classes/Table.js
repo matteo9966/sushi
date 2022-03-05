@@ -65,7 +65,7 @@ class Table {
 
     const tavolo = table.table;
     tavolo.utenti.push(utente);
-    console.log(tavolo);
+  
     await storage.updateItem(idTavolo, tavolo); // in questo modo dovrei aggiornare il tavolo
 
     //2 aggiungo al tavolo
@@ -104,7 +104,7 @@ class Table {
 
   /**@param {Table} table */
   static utentiTavolo(table) {
-      console.log(table);
+
     const utenti = table.utenti.map((utente) => ({
       nome: utente.nome,
       id: utente.id,
@@ -120,8 +120,7 @@ class Table {
   static utenteFaParteDelTavolo(idUtente,table){
       const utenti = Table.utentiTavolo(table);    
       for(let i = 0 ; i< utenti.length; i++){
-          console.log(utenti.length);
-          console.log(utenti[i].id.normalize(),idUtente.normalize())
+    
          if(utenti[i].id.normalize()==idUtente.normalize()){
              return true
          }
@@ -140,13 +139,34 @@ class Table {
         throw new Error("ID tavolo non presente");
       }
       const ordinazioneCompleta = sortPiattiOrdinati(table.table);
-      console.log(ordinazioneCompleta);
+  
 
       return ordinazioneCompleta
       
     } catch (err) {
         throw err
     }
+  }
+
+  static async clearOrdinazioniDiTuttiGliUtentiAlTavolo(idTavolo){
+    try{
+      const table = await Table.tableExists(idTavolo);
+     
+      if (!table.exists) {
+        throw new Error("ID tavolo non presente");
+      }
+
+      const newTableSenzaOrdinazioni= table.table.utenti.forEach(utente=>utente.ordinazione=[]);
+      await storage.updateItem(idTavolo, table.table);
+      return table.table
+
+
+
+    }catch(err){
+      throw err
+    }
+
+
   }
 
 }
