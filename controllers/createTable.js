@@ -168,4 +168,32 @@ const getThisTable= async (req,res)=>{
 
 }
 
-module.exports = {createTable,allTables,addUserToTable,addOrdinazioneUtente,getCompleteOrder,getThisTable};
+const clearOrdinazioniDiTuttiGliUtentiAlTavolo = async (req,res) =>{
+    const {id:idTavolo} = req.params;
+
+    if(!idTavolo){
+        response.errorCode=ErrorCode.BadRequest.code;
+        response.errorDescription=ErrorCode.BadRequest.description +"ID Tavolo non inserito";
+        return  res.status(StatusCodes.BAD_REQUEST).json(response);
+    }
+
+    try {
+       const response = new ResponseObj();
+       const tavoloAggiornato = await Table.clearOrdinazioniDiTuttiGliUtentiAlTavolo(idTavolo);
+       response.payload=tavoloAggiornato;
+       return res.status(StatusCodes.OK).json(response);
+       
+    } catch (error) {
+        if(error instanceof TypeError){
+            console.log("typeError")
+            error.message  = ""
+        }
+        response.errorCode=ErrorCode.BadRequest.code;
+        response.errorDescription=ErrorCode.BadRequest.description+" "+error;
+        return res.status(StatusCodes.BAD_REQUEST).json(response);  
+    }
+
+
+}
+
+module.exports = {createTable,allTables,addUserToTable,addOrdinazioneUtente,getCompleteOrder,getThisTable,clearOrdinazioniDiTuttiGliUtentiAlTavolo};
