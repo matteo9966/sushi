@@ -4,13 +4,13 @@ const notfound = require("./middleware/not-found");
 const createTableRoute = require("./routes/createTable");
 app.use(express.json());
 const storage = require("node-persist");
-
+var cors = require('cors')
 //inizializzo lo storage:
 
 app.get("/", (req, res) => {
     res.send("<h1>Hello from sushi server</h1>");
 });
-
+app.use(cors());
 app.use("/api/v1", createTableRoute);
 app.use(notfound);
 
