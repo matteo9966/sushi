@@ -2,12 +2,12 @@
 const express = require('express');
 const {createTable,allTables,addUserToTable,addOrdinazioneUtente,getCompleteOrder,getThisTable,clearOrdinazioniDiTuttiGliUtentiAlTavolo} = require('../controllers/createTable')
 const Router = express.Router();
-
-Router.route('/createTable').post(createTable,addUserToTable);
-Router.route('/newUser').post(addUserToTable)
-Router.route('/allTables').get(allTables);
-Router.route('/newOrder').post(addOrdinazioneUtente);
-Router.route('/complete/:id').get(getCompleteOrder);
-Router.route('/thisTable/:id').get(getThisTable);
-Router.route('/clearOrders/:id').delete(clearOrdinazioniDiTuttiGliUtentiAlTavolo);
+const {logBody} = require('../middleware/logBody');
+Router.route('/createTable').post(logBody,createTable,addUserToTable);
+Router.route('/newUser').post(logBody,addUserToTable)
+Router.route('/allTables').get(logBody,allTables);
+Router.route('/newOrder').post(logBody,addOrdinazioneUtente);
+Router.route('/complete/:id').get(logBody,getCompleteOrder);
+Router.route('/thisTable/:id').get(logBody,getThisTable);
+Router.route('/clearOrders/:id').delete(logBody,clearOrdinazioniDiTuttiGliUtentiAlTavolo);
 module.exports = Router;
