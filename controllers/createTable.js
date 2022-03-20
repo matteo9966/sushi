@@ -139,6 +139,33 @@ const getCompleteOrder= async (req,res)=>{
 
 }
 
+const getThisTable= async (req,res)=>{
+    const response = new ResponseObj();
+    const idTavolo = req.params?.id;
+    
+    if(idTavolo==undefined || idTavolo == null){
+        response.errorCode=ErrorCode.BadRequest.code;
+       response.errorDescription=ErrorCode.BadRequest.description +"ID Tavolo non inserito";
+      return  res.status(StatusCodes.BAD_REQUEST).json(response);
+    }
+    try {
+       const tavolo= await Table.getTavolo(idTavolo)
+      
+       response.payload=tavolo;
+       return res.status(StatusCodes.OK).json(response);
+    } catch (error) {
+        if(error instanceof TypeError){
+            console.log("typeError")
+            error.message  = ""
+        }
+        response.errorCode=ErrorCode.BadRequest.code;
+        response.errorDescription=ErrorCode.BadRequest.description+" "+error;
+        return res.status(StatusCodes.BAD_REQUEST).json(response);  
+        
+    }
+
+}
+
 const clearOrdinazioniDiTuttiGliUtentiAlTavolo = async (req,res) =>{
     const {id:idTavolo} = req.params;
 
@@ -167,4 +194,4 @@ const clearOrdinazioniDiTuttiGliUtentiAlTavolo = async (req,res) =>{
 
 }
 
-module.exports = {createTable,allTables,addUserToTable,addOrdinazioneUtente,getCompleteOrder,clearOrdinazioniDiTuttiGliUtentiAlTavolo};
+module.exports = {createTable,allTables,addUserToTable,addOrdinazioneUtente,getCompleteOrder,getThisTable,clearOrdinazioniDiTuttiGliUtentiAlTavolo};
