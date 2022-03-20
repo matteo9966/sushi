@@ -12,7 +12,7 @@ const createTable = async (req,res,next)=>{
     const response = new ResponseObj();
     
     const tableId= await uniqueTableID(5); // 
-   const {portate,coperti,nome} = req.body;
+   const {tavolo:{coperti,portate},nome} = req.body;
    if(!portate || !coperti || !nome){
        response.errorCode=ErrorCode.BadRequest.code;
        response.errorDescription=ErrorCode.BadRequest.description;
