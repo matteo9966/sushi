@@ -12,25 +12,26 @@ const createTable = async (req,res,next)=>{
     const response = new ResponseObj();
     
     const tableId= await uniqueTableID(5); // 
-   const {tavolo:{coperti,portate},nome} = req.body;
-   if(!portate || !coperti || !nome){
+   const {tavolo,nome} = req.body;
+   if(!tavolo?.portate || !tavolo?.coperti || !nome){
        response.errorCode=ErrorCode.BadRequest.code;
        response.errorDescription=ErrorCode.BadRequest.description;
  
        res.status(StatusCodes.BAD_REQUEST).json(response);
        return;
    }
+
  
 
    try {
-       const {coperti,portate} = req.body
-       const table = new Table(coperti,portate);
+       const {tavolo} = req.body
+       const table = new Table(tavolo.coperti,tavolo.portate);
        await storage.setItem(tableId,table);
           
     } catch (error) {
        response.errorCode= ErrorCode.ServerError.code
        response.errorDescription= ErrorCode.ServerError.description;
-       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response); 
+       return res.status(200).json(response); 
     }
 
     req.body = {nome:nome,idTavolo:tableId} //questo è il payload che va al middleware per aggiungere un utente al tavolo
@@ -70,7 +71,7 @@ const addUserToTable = async (req,res)=>{
         const tavoloConNuovoUtente = await storage.getItem(idTavolo);
          const infoTavolo = new TableResponse(tavoloConNuovoUtente.coperti,tavoloConNuovoUtente.portate,tavoloConNuovoUtente.utenti,idTavolo)
          
-         response.payload={infoTavolo,utente};
+         response.payload={tavolo:infoTavolo,utente};
          res.status(StatusCodes.OK).json(response);
         
     } catch (error) {
@@ -80,7 +81,7 @@ const addUserToTable = async (req,res)=>{
         }
         response.errorCode=ErrorCode.BadRequest.code;
         response.errorDescription=ErrorCode.BadRequest.description+" "+error.message;
-        return res.status(StatusCodes.BAD_REQUEST).json(response)
+        return res.status(StatusCodes.OK).json(response)
     }
     
 }
@@ -92,7 +93,7 @@ const addOrdinazioneUtente = async (req,res)=>{
         response.errorCode=ErrorCode.BadRequest.code;
        response.errorDescription=ErrorCode.BadRequest.description;
  
-       res.status(StatusCodes.BAD_REQUEST).json(response);
+       res.status(StatusCodes.OK).json(response);
        return;
     } 
     //1 verifico l'esistenza del tavolo, se il tavolo c'è, se l'utente c'è  aggiungo l'ordinazione.
@@ -107,7 +108,7 @@ const addOrdinazioneUtente = async (req,res)=>{
         }
         response.errorCode=ErrorCode.BadRequest.code;
         response.errorDescription=ErrorCode.BadRequest.description+" "+error;
-        return res.status(StatusCodes.BAD_REQUEST).json(response);  
+        return res.status(StatusCodes.OK).json(response);  
     }
     //quello che mi aspetto è un id del utente dal body
 }
@@ -119,7 +120,7 @@ const getCompleteOrder= async (req,res)=>{
     if(idTavolo==undefined || idTavolo == null){
         response.errorCode=ErrorCode.BadRequest.code;
        response.errorDescription=ErrorCode.BadRequest.description +"ID Tavolo non inserito";
-      return  res.status(StatusCodes.BAD_REQUEST).json(response);
+      return  res.status(StatusCodes.OK).json(response);
     }
     try {
        const ordinazioneCompleta= await Table.getOrdinazioneCompletaDelTavolo(idTavolo)
@@ -133,7 +134,7 @@ const getCompleteOrder= async (req,res)=>{
         }
         response.errorCode=ErrorCode.BadRequest.code;
         response.errorDescription=ErrorCode.BadRequest.description+" "+error;
-        return res.status(StatusCodes.BAD_REQUEST).json(response);  
+        return res.status(StatusCodes.OK).json(response);  
         
     }
 
@@ -146,7 +147,7 @@ const getThisTable= async (req,res)=>{
     if(idTavolo==undefined || idTavolo == null){
         response.errorCode=ErrorCode.BadRequest.code;
        response.errorDescription=ErrorCode.BadRequest.description +"ID Tavolo non inserito";
-      return  res.status(StatusCodes.BAD_REQUEST).json(response);
+      return  res.status(StatusCodes.OK).json(response);
     }
     try {
        const tavolo= await Table.getTavolo(idTavolo)
@@ -160,7 +161,7 @@ const getThisTable= async (req,res)=>{
         }
         response.errorCode=ErrorCode.BadRequest.code;
         response.errorDescription=ErrorCode.BadRequest.description+" "+error;
-        return res.status(StatusCodes.BAD_REQUEST).json(response);  
+        return res.status(StatusCodes.OK).json(response);  
         
     }
 
@@ -172,7 +173,7 @@ const clearOrdinazioniDiTuttiGliUtentiAlTavolo = async (req,res) =>{
     if(!idTavolo){
         response.errorCode=ErrorCode.BadRequest.code;
         response.errorDescription=ErrorCode.BadRequest.description +"ID Tavolo non inserito";
-        return  res.status(StatusCodes.BAD_REQUEST).json(response);
+        return  res.status(StatusCodes.OK).json(response);
     }
 
     try {
@@ -188,7 +189,7 @@ const clearOrdinazioniDiTuttiGliUtentiAlTavolo = async (req,res) =>{
         }
         response.errorCode=ErrorCode.BadRequest.code;
         response.errorDescription=ErrorCode.BadRequest.description+" "+error;
-        return res.status(StatusCodes.BAD_REQUEST).json(response);  
+        return res.status(StatusCodes.OK).json(response);  
     }
 
 
