@@ -102,7 +102,7 @@
 ```
 - #### Response Body
 
-// il response body in questo caso è lo stesso di aggiungi utente, viene restituito tutto il tavolo con l'ordinazione aggiornata
+## // il response body in questo caso è lo stesso di aggiungi utente, viene restituito tutto il tavolo con l'ordinazione aggiornata
 
 ```json
 {
