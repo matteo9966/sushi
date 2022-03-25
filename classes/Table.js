@@ -204,6 +204,12 @@ class Piatto {
     this.id = id;
     this.qnt = qnt;
   }
+  get amount(){
+    return this.qnt
+  }
+  set amount(qnt){
+    this.qnt=qnt;
+  }
 }
 
 

@@ -61,7 +61,7 @@ const addUserToTable = async (req,res)=>{
     if(!nome || !idTavolo){
        response.errorCode=ErrorCode.BadRequest.code;
        response.errorDescription=ErrorCode.BadRequest.description;
-       return res.status(StatusCodes.BAD_REQUEST).json(response);
+       return res.status(StatusCodes.OK).json(response);
     }
     //controllo se tavolo esiste //controllo se i dati sono tutti presenti
     try {
@@ -99,7 +99,10 @@ const addOrdinazioneUtente = async (req,res)=>{
     //1 verifico l'esistenza del tavolo, se il tavolo c'è, se l'utente c'è  aggiungo l'ordinazione.
     try {
        const updatedTable = await Table.aggiungiOrdinazioneUtente(idTavolo,idUtente,piatti)
-       response.payload=updatedTable;
+       const tavoloConNuovoUtente = await storage.getItem(idTavolo);
+       const infoTavolo = new TableResponse(tavoloConNuovoUtente.coperti,tavoloConNuovoUtente.portate,tavoloConNuovoUtente.utenti,idTavolo)
+
+       response.payload=infoTavolo;
        return res.status(StatusCodes.OK).json(response);
     }catch(error){
         if(error instanceof TypeError){
