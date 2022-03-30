@@ -127,8 +127,11 @@ const getCompleteOrder= async (req,res)=>{
     }
     try {
        const ordinazioneCompleta= await Table.getOrdinazioneCompletaDelTavolo(idTavolo)
+
        console.log("ordinazione completa:",ordinazioneCompleta);
-       response.payload=ordinazioneCompleta;
+
+
+       response.payload=ordinazioneCompleta; //{tavolo:{},ordine:[]}
        return res.status(StatusCodes.OK).json(response);
     } catch (error) {
         if(error instanceof TypeError){

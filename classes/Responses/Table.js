@@ -1,9 +1,10 @@
-const {Table} = require('../Table')
-class TableResponse extends Table {
+class TableResponse {
     constructor(coperti,portate,utenti,codiceTavolo){
-        super(coperti,portate);
+    
         this.utenti=utenti;
         this.codiceTavolo=codiceTavolo;
+        this.portate=portate;
+        this.coperti=coperti;
     }
 }
 

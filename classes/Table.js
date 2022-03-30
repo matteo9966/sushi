@@ -1,6 +1,7 @@
 const storage = require("node-persist");
 const makeid = require("../utils/randomKey");
 const sortPiattiOrdinati = require('../utils/sortPiattiOrdinati');
+const { TableResponse } = require("./Responses/Table");
 class Table {
   constructor(coperti, portate) {
     this.coperti = coperti; //numero
@@ -138,10 +139,12 @@ class Table {
       if (!table.exists) {
         throw new Error("ID tavolo non presente");
       }
+      const infoTavolo = {coperti:table.table.coperti,portate:table.table.portate,utenti:table.table.utenti,codiceTavolo:idTavolo}
       const ordinazioneCompleta = sortPiattiOrdinati(table.table);
+      const ordineCompleto = {tavolo:infoTavolo,ordine:ordinazioneCompleta};
   
 
-      return ordinazioneCompleta
+      return ordineCompleto
       
     } catch (err) {
         throw err
