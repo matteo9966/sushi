@@ -174,6 +174,7 @@ const getThisTable= async (req,res)=>{
 }
 
 const clearOrdinazioniDiTuttiGliUtentiAlTavolo = async (req,res) =>{
+    const response = new ResponseObj();
     const {id:idTavolo} = req.params;
 
     if(!idTavolo){
@@ -200,5 +201,33 @@ const clearOrdinazioniDiTuttiGliUtentiAlTavolo = async (req,res) =>{
 
 
 }
+const clearOrdinazioneUtenteAlTavolo = async (req,res) =>{
+    const response = new ResponseObj();
+    const {id:idTavolo,idUtente} = req.params;
 
-module.exports = {createTable,allTables,addUserToTable,addOrdinazioneUtente,getCompleteOrder,getThisTable,clearOrdinazioniDiTuttiGliUtentiAlTavolo};
+    if(!idTavolo ||!idUtente){
+        response.errorCode=ErrorCode.BadRequest.code;
+        response.errorDescription=ErrorCode.BadRequest.description +"ID Tavolo o ID Utente assenti";
+        return  res.status(StatusCodes.OK).json(response);
+    }
+
+    try {
+       const response = new ResponseObj();
+       const tavoloAggiornato = await Table.clearOrdinazioniUtenteAlTavolo(idTavolo,idUtente);
+       response.payload=tavoloAggiornato;
+       return res.status(StatusCodes.OK).json(response);
+       
+    } catch (error) {
+        if(error instanceof TypeError){
+            console.log("typeError")
+            error.message  = ""
+        }
+        response.errorCode=ErrorCode.BadRequest.code;
+        response.errorDescription=ErrorCode.BadRequest.description+" "+error;
+        return res.status(StatusCodes.OK).json(response);  
+    }
+
+
+}
+
+module.exports = {createTable,allTables,addUserToTable,addOrdinazioneUtente,getCompleteOrder,getThisTable,clearOrdinazioniDiTuttiGliUtentiAlTavolo,clearOrdinazioneUtenteAlTavolo};

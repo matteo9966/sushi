@@ -170,6 +170,30 @@ class Table {
 
 
   }
+  static async clearOrdinazioniUtenteAlTavolo(idTavolo,idUtente){
+    try{
+      const table = await Table.tableExists(idTavolo);
+     
+      if (!table.exists) {
+        throw new Error("ID tavolo non presente");
+      }  
+      const newTableSenzaOrdinazioni= table.table.utenti.forEach(utente=>utente.ordinazione=[]);
+      const utente = table.table.utenti.find(utente=>utente.id===idUtente);
+      if(!utente){
+        throw new Error("ID utente non presente nel tavolo")
+      }
+      utente.ordinazione=[];
+      await storage.updateItem(idTavolo, table.table);
+      return table.table
+
+
+
+    }catch(err){
+      throw err
+    }
+
+
+  }
 
   static async clearOrdinazioniDiTuttiGliUtentiAlTavolo(idTavolo){
     try{
