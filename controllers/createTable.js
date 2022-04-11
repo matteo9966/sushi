@@ -34,7 +34,7 @@ const createTable = async (req,res,next)=>{
        return res.status(200).json(response); 
     }
 
-    req.body = {nome:nome,idTavolo:tableId} //questo è il payload che va al middleware per aggiungere un utente al tavolo
+    req.body = {nome:nome,idTavolo:tableId,isAdmin:true} //questo è il payload che va al middleware per aggiungere un utente al tavolo
     next();
     
 }
@@ -55,14 +55,20 @@ const addUserToTable = async (req,res)=>{
 
     //io da user mi aspetto nome e  //TODO: considera il caso di nomi duplicati
     const nome = userData?.nome;
-    const utente = new Utente(nome,[]) // quando aggiungi utente crei un array vuoto
+    const isAdmin = userData?.isAdmin;
     const idTavolo = userData?.idTavolo;
-    
     if(!nome || !idTavolo){
        response.errorCode=ErrorCode.BadRequest.code;
        response.errorDescription=ErrorCode.BadRequest.description;
        return res.status(StatusCodes.OK).json(response);
     }
+
+
+    const utente = new Utente(nome,[]) // quando aggiungi utente crei un array vuoto
+    if(isAdmin){
+        utente.isAdmin=true;
+    }
+    
     //controllo se tavolo esiste //controllo se i dati sono tutti presenti
     try {
         await Table.aggiungiUtenteAlTavolo(idTavolo,{...utente})
@@ -157,7 +163,7 @@ const getThisTable= async (req,res)=>{
     }
     try {
        const tavolo= await Table.getTavolo(idTavolo)
-      
+       tavolo.codiceTavolo=idTavolo
        response.payload=tavolo;
        return res.status(StatusCodes.OK).json(response);
     } catch (error) {
@@ -186,6 +192,7 @@ const clearOrdinazioniDiTuttiGliUtentiAlTavolo = async (req,res) =>{
     try {
        const response = new ResponseObj();
        const tavoloAggiornato = await Table.clearOrdinazioniDiTuttiGliUtentiAlTavolo(idTavolo);
+      
        response.payload=tavoloAggiornato;
        return res.status(StatusCodes.OK).json(response);
        
@@ -213,8 +220,8 @@ const clearOrdinazioneUtenteAlTavolo = async (req,res) =>{
 
     try {
        const response = new ResponseObj();
-       const tavoloAggiornato = await Table.clearOrdinazioniUtenteAlTavolo(idTavolo,idUtente);
-       response.payload=tavoloAggiornato;
+       await Table.clearOrdinazioniUtenteAlTavolo(idTavolo,idUtente);
+       response.payload=await Table.getOrdinazioneCompletaDelTavolo(idTavolo);
        return res.status(StatusCodes.OK).json(response);
        
     } catch (error) {
@@ -230,4 +237,35 @@ const clearOrdinazioneUtenteAlTavolo = async (req,res) =>{
 
 }
 
-module.exports = {createTable,allTables,addUserToTable,addOrdinazioneUtente,getCompleteOrder,getThisTable,clearOrdinazioniDiTuttiGliUtentiAlTavolo,clearOrdinazioneUtenteAlTavolo};
+const removeUserFromTable = async (req,res)=>{
+    const response = new ResponseObj();
+    const {id:idTavolo,idUtente} = req.params;
+
+    if(!idTavolo ||!idUtente){
+        response.errorCode=ErrorCode.BadRequest.code;
+        response.errorDescription=ErrorCode.BadRequest.description +"ID Tavolo o ID Utente assenti";
+        return  res.status(StatusCodes.OK).json(response);
+    }
+
+    try {
+        await Table.removeUtenteFromTavolo(idTavolo,idUtente)
+        const ordinazioneCompleta= await Table.getOrdinazioneCompletaDelTavolo(idTavolo)
+        response.payload=ordinazioneCompleta; 
+        return res.status(StatusCodes.OK).json(response);
+
+        
+    } catch (error) {
+        if(error instanceof TypeError){
+            console.log("typeError")
+            error.message  = ""
+        }
+        response.errorCode=ErrorCode.BadRequest.code;
+        response.errorDescription=ErrorCode.BadRequest.description+" "+error;
+        return res.status(StatusCodes.OK).json(response);  
+        
+    }
+
+
+}
+
+module.exports = {createTable,allTables,addUserToTable,addOrdinazioneUtente,getCompleteOrder,getThisTable,clearOrdinazioniDiTuttiGliUtentiAlTavolo,clearOrdinazioneUtenteAlTavolo,removeUserFromTable};

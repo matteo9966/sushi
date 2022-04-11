@@ -177,7 +177,6 @@ class Table {
       if (!table.exists) {
         throw new Error("ID tavolo non presente");
       }  
-      const newTableSenzaOrdinazioni= table.table.utenti.forEach(utente=>utente.ordinazione=[]);
       const utente = table.table.utenti.find(utente=>utente.id===idUtente);
       if(!utente){
         throw new Error("ID utente non presente nel tavolo")
@@ -195,6 +194,24 @@ class Table {
 
   }
 
+  static async removeUtenteFromTavolo(idTavolo,idUtente){
+    
+
+       const table = await Table.tableExists(idTavolo);
+       if (!table.exists) {
+        throw new Error("ID tavolo non presente");
+      }
+
+      const utenti = table.table.utenti.filter(utente=>utente.id!==idUtente);
+      table.table.utenti=utenti;
+      await storage.updateItem(idTavolo,table.table)
+      return table.table
+      
+       
+    
+
+    }
+
   static async clearOrdinazioniDiTuttiGliUtentiAlTavolo(idTavolo){
     try{
       const table = await Table.tableExists(idTavolo);
@@ -203,7 +220,7 @@ class Table {
         throw new Error("ID tavolo non presente");
       }
 
-      const newTableSenzaOrdinazioni= table.table.utenti.forEach(utente=>utente.ordinazione=[]);
+      table.table.utenti.forEach(utente=>utente.ordinazione=[]);
       await storage.updateItem(idTavolo, table.table);
       return table.table
 
@@ -223,6 +240,7 @@ class Utente {
     this.nome = nome;
     this.ordinazione = ordinazione;
     this.id = makeid(6);
+    this.isAdmin=false;
   }
 }
 
