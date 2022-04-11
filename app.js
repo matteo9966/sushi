@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const notfound = require("./middleware/not-found");
 const createTableRoute = require("./routes/createTable");
+const path = require('path');
 app.use(express.json());
 const storage = require("node-persist");
 const morgan = require("morgan");
@@ -9,12 +10,14 @@ var cors = require('cors')
 
 //inizializzo lo storage:
 app.use(morgan("combined"));
+app.use(express.static(path.join(__dirname,'./client/build')));
 app.get("/", (req, res) => {
     res.send("<h1>Hello from sushi server</h1>");
 });
 app.use(cors());
 app.use("/api/v1",createTableRoute);
-app.use(notfound);
+app.use((req,res)=>{res.status(404).sendFile(path.join(__dirname,'./client/build/index.html'))})
+// app.use(notfound);
 
 
 
