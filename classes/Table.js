@@ -11,6 +11,11 @@ class Table {
     // this.tableData= new TableData()
   }
 
+  /**
+   * 
+   * @param {string} idTavolo 
+   * @returns {Promise<Table>}
+   */
   static async getTavolo(idTavolo) {
     try{
       return await storage.getItem(idTavolo);
@@ -20,14 +25,19 @@ class Table {
     }
   }
 
+  /**
+   * 
+   * @param {string} idTavolo 
+   * @returns {Promise<{loggati:number,coperti:number}>}
+   */
   static async getLoggatiTavolo(idTavolo) {
     //devo cercare!
     const tavolo = await Table.getTavolo(idTavolo);
     if (Object.keys(tavolo).length < 1) {
-      return 0;
+      return {loggati:0,coperti:tavolo.coperti};
     }
 
-    return tavolo.utenti.length;
+    return {loggati:tavolo.utenti.length || 0 ,coperti:tavolo.coperti};
   }
 
   /**

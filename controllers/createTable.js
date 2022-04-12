@@ -1,7 +1,6 @@
 const {StatusCodes} = require('http-status-codes');
 const {Table,Utente,Piatto} = require('../classes/Table');
 const {TableResponse} = require('../classes/Responses/Table')
-const OrdinazioneResponse = require('../classes/Responses/Ordinazione');
 const ResponseObj = require('../classes/Responses/ResponseObject');
 const {ErrorCode} = require('../errorcodes/index')
 const storage = require("node-persist");
@@ -56,13 +55,28 @@ const addUserToTable = async (req,res)=>{
     //io da user mi aspetto nome e  //TODO: considera il caso di nomi duplicati
     const nome = userData?.nome;
     const isAdmin = userData?.isAdmin;
-    const idTavolo = userData?.idTavolo;
+    let idTavolo = userData?.idTavolo;
     if(!nome || !idTavolo){
        response.errorCode=ErrorCode.BadRequest.code;
        response.errorDescription=ErrorCode.BadRequest.description;
        return res.status(StatusCodes.OK).json(response);
     }
+    idTavolo = (""+idTavolo).toUpperCase();
+    const tavoloInfo = await Table.getLoggatiTavolo(idTavolo);
+    const copertiAlTavolo = tavoloInfo?.coperti;
+    let loggatiAlTavolo = tavoloInfo?.loggati;
 
+    if(copertiAlTavolo <= 0 || loggatiAlTavolo==null){
+        response.errorCode=ErrorCode.BadRequest.code;
+        response.errorDescription=`loggati al tavolo: ${loggatiAlTavolo}, coperti al tavolo: ${copertiAlTavolo}`;
+        return res.status(StatusCodes.OK).json(response);
+    }
+    loggatiAlTavolo+=1;
+    if((copertiAlTavolo-loggatiAlTavolo)<0){
+        response.errorCode=ErrorCode.BadRequest.code;
+        response.errorDescription="Errore: Numero di coperti per questo tavolo è "+copertiAlTavolo;
+        return res.status(StatusCodes.OK).json(response);
+    }
 
     const utente = new Utente(nome,[]) // quando aggiungi utente crei un array vuoto
     if(isAdmin){
