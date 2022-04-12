@@ -7,6 +7,7 @@ app.use(express.json());
 const storage = require("node-persist");
 const morgan = require("morgan");
 var cors = require('cors')
+require('dotenv').config();
 
 //inizializzo lo storage:
 app.use(morgan("combined"));
@@ -21,7 +22,7 @@ app.use((req,res)=>{res.status(404).sendFile(path.join(__dirname,'./client/build
 
 
 
-const port = 4444;
+const port = process.env.PORT || 4444
 
 const start = async () => {
   try {
