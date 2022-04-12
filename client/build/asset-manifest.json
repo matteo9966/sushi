@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/static/css/main.51fe377f.css",
+    "main.js": "/static/js/main.2680a77a.js",
+    "static/media/ReggaeOne-Regular.ttf": "/static/media/ReggaeOne-Regular.90a023f683f8cd4c0e7a.ttf",
+    "static/media/loading.gif": "/static/media/loading.2d32259d750bd820ce0e.gif",
+    "static/media/backgroundHD.jpg": "/static/media/backgroundHD.42795da091a795bc8df4.jpg",
+    "static/media/sushicat.png": "/static/media/sushicat.fdd07a00482f08348276.png",
+    "static/media/button.png": "/static/media/button.a228908dda297a419444.png",
+    "static/media/menu.png": "/static/media/menu.cbd0bc12669ecb25cd60.png",
+    "static/media/icon-tavolo.png": "/static/media/icon-tavolo.d929faa7b07ebffcc812.png",
+    "static/media/ordinazioni-button.png": "/static/media/ordinazioni-button.ba34e409109206797923.png",
+    "static/media/tavolo.png": "/static/media/tavolo.0e06dccddfbfdcd90640.png",
+    "index.html": "/index.html",
+    "main.51fe377f.css.map": "/static/css/main.51fe377f.css.map",
+    "main.2680a77a.js.map": "/static/js/main.2680a77a.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.51fe377f.css",
+    "static/js/main.2680a77a.js"
+  ]
+}
